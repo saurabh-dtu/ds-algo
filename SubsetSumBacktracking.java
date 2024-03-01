@@ -1,4 +1,4 @@
-class SubsetSum {
+class SubsetSumBacktracking {
 private boolean getSum(int[] arr, int target) {
     return backtrack(arr, 0, 0, target);
 }
