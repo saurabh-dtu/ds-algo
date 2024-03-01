@@ -1,0 +1,45 @@
+/*
+to find the kth permutation of a sequence of numbers from 1 to n.
+*/
+import java.util.ArrayList;
+import java.util.List;
+
+public class KthPermutation {
+
+    public static String getKthPermutation(int n, int k) {
+        // Create a list to store numbers from 1 to n
+        List<Integer> nums = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            nums.add(i);
+        }
+
+        // StringBuilder to store the resulting permutation
+        StringBuilder result = new StringBuilder();
+
+        // Calculate factorials from 0! to (n-1)!
+        int[] factorial = new int[n];
+        factorial[0] = 1;
+        for (int i = 1; i < n; i++) {
+            factorial[i] = factorial[i - 1] * i;
+        }
+
+        k--; // Convert k to 0-based index
+        for (int i = n; i > 0; i--) {
+            int index = k / factorial[i - 1];
+            k %= factorial[i - 1];
+            result.append(nums.get(index)); // Append the digit at index
+            nums.remove(index); // Remove the used digit
+        }
+
+        return result.toString(); // Return the kth permutation
+    }
+
+    public static void main(String[] args) {
+        int n = 4; // Number of variables
+        int k = 9; // Kth permutation to find
+
+        String kthPermutation = getKthPermutation(n, k);
+        System.out.println("Kth permutation: " + kthPermutation);
+    }
+}
+//output - Kth permutation: 2314
