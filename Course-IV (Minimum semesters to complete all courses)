@@ -1,0 +1,74 @@
+/*
+Longest Path in DAG 
+
+Similar question asked in google - 
+You are given a course prerequisites list in the form {(a,b),(c,d)...}. A semester is a unit where you can take one or multiple courses.
+To take a course in a semester, you must complete all the prerequisite courses of that course.
+You need to find minimum number of semesters required to complete all the courses of the curriculum.
+
+(a,b) -> course a is prerequisite to take course b.
+
+Example:
+
+Given [(1,2),(1,5),(5,2),(2,3),(2,4),(4,6),(5,6)], the answer is 5.
+
+Having 1 course each semester will give us 6 semesters. Or, One can combine course 3 with other course in a semester after completing course 2. i.e.
+
+1 -> 5 -> 2 -> 4,3 -> 6
+
+1 -> 5 -> 2 -> 4 -> 6,3
+
+So, to complete the curriculum minimum 5 semesters are required. 
+*/
+
+import java.util.*;
+
+public class CoursePrerequisites {
+    public static int minSemesters(int n, int[][] prerequisites) {
+        // Build graph representation using adjacency list
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        int[] inDegree = new int[n + 1]; // in-degree of each course
+
+        for (int[] prereq : prerequisites) {
+            graph.computeIfAbsent(prereq[0], k -> new ArrayList<>()).add(prereq[1]);
+            inDegree[prereq[1]]++;
+        }
+
+        Queue<Integer> queue = new LinkedList<>();
+        int semesters = 0;
+
+        // Add courses with in-degree 0 to the queue (courses that have no prerequisites)
+        for (int i = 1; i <= n; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int course = queue.poll();
+                n--;
+
+                // Reduce in-degree for the courses that are dependent on the completed course
+                if (graph.containsKey(course)) {
+                    for (int nextCourse : graph.get(course)) {
+                        inDegree[nextCourse]--;
+                        if (inDegree[nextCourse] == 0) {
+                            queue.offer(nextCourse);
+                        }
+                    }
+                }
+            }
+            semesters++;
+        }
+
+        return n == 0 ? semesters : -1; // Return -1 if there are remaining courses (cycle exists)
+    }
+
+    public static void main(String[] args) {
+        int[][] prerequisites = {{1, 2}, {1, 5}, {5, 2}, {2, 3}, {2, 4}, {4, 6}, {5, 6}};
+        int n = 6;
+        System.out.println("Minimum number of semesters: " + minSemesters(n, prerequisites)); // Output: 5
+    }
+}
